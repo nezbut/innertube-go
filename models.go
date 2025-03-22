@@ -1,4 +1,4 @@
-package youtube_go
+package innertubego
 
 import (
 	"fmt"

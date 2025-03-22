@@ -1,4 +1,4 @@
-package youtube_go
+package innertubego
 
 func Filter(dictionary map[string]interface{}) map[string]interface{} {
 	result := make(map[string]interface{})

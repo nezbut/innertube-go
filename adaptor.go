@@ -1,8 +1,9 @@
-package youtube_go
+package innertubego
 
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,14 +26,14 @@ func NewInnerTubeAdaptor(context ClientContext, session *http.Client) *InnerTube
 	}
 }
 
-func (ita *InnerTubeAdaptor) buildRequest(endpoint string, params map[string]string, body map[string]interface{}) (*http.Request, error) {
+func (ita *InnerTubeAdaptor) buildRequest(ctx context.Context, endpoint string, params map[string]string, body map[string]interface{}) (*http.Request, error) {
 	body = Contextualise(ita.context, body)
 	reqBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", config.BaseURL+strings.ToLower(endpoint), bytes.NewBuffer(reqBody))
+	req, err := http.NewRequestWithContext(ctx, "POST", config.BaseURL+strings.ToLower(endpoint), bytes.NewBuffer(reqBody))
 	if err != nil {
 		return nil, err
 	}
@@ -50,8 +51,8 @@ func (ita *InnerTubeAdaptor) buildRequest(endpoint string, params map[string]str
 	return req, nil
 }
 
-func (ita *InnerTubeAdaptor) request(endpoint string, params map[string]string, body map[string]interface{}) (*http.Response, error) {
-	req, err := ita.buildRequest(endpoint, params, body)
+func (ita *InnerTubeAdaptor) request(ctx context.Context, endpoint string, params map[string]string, body map[string]interface{}) (*http.Response, error) {
+	req, err := ita.buildRequest(ctx, endpoint, params, body)
 	/*
 		fmt.Println("Method: ", req.Method)
 		fmt.Println("URL: ", req.URL)
@@ -72,8 +73,8 @@ func (ita *InnerTubeAdaptor) request(endpoint string, params map[string]string, 
 	return ita.session.Do(req)
 }
 
-func (ita *InnerTubeAdaptor) Dispatch(endpoint string, params map[string]string, body map[string]interface{}) (map[string]interface{}, error) {
-	resp, err := ita.request(endpoint, params, body)
+func (ita *InnerTubeAdaptor) Dispatch(ctx context.Context, endpoint string, params map[string]string, body map[string]interface{}) (map[string]interface{}, error) {
+	resp, err := ita.request(ctx, endpoint, params, body)
 	if err != nil {
 		return nil, err
 	}
