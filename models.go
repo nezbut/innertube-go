@@ -8,14 +8,14 @@ import (
 )
 
 type Locale struct {
-	hl string
-	gl *string
+	HL string
+	GL *string
 }
 
 func (l *Locale) AcceptLanguage() string {
-	langs := []string{l.hl}
-	if l.gl != nil {
-		langs = append(langs, *l.gl)
+	langs := []string{l.HL}
+	if l.GL != nil {
+		langs = append(langs, *l.GL)
 	}
 	return strings.Join(langs, ",")
 }
